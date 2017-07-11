@@ -26,6 +26,10 @@ def process_log(log_file):
     Base.metadata.create_all(engine)
 
     for request in requests:
+
+        if not request:
+            continue
+
         ip, date, url, code, size = request[0]
 
         if not url.startswith("/court"):
