@@ -1,0 +1,4 @@
+sqlalchemy
+
+# Uncomment this line if you want work with postgresql
+psycopg2
