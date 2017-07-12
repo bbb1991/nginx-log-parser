@@ -1,0 +1,3 @@
+10.1.0.59 - - [12/Jul/2017:17:57:56 +0600] "POST /court/ws/avf HTTP/1.1" 500 296 "-" "CodeGear SOAP 1.3" "10.1.36.155"
+10.50.5.128 - - [12/Jul/2017:17:57:57 +0600] "GET /court/rest/a/statistics/48559/snapshots/max-level-items?executor=BUILDER&index=610101318762&levelKey=yooman&parentIndex=0&rowId=0 HTTP/1.1" 500 1042 "http://10.1.0.144/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36" "-"
+10.50.5.165 - - [12/Jul/2017:17:57:57 +0600] "GET /hr/rest/a/staff-change/list?page=0 HTTP/1.1" 200 51961 "http://10.1.0.144:7777/" "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0" "-"

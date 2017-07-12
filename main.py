@@ -13,6 +13,18 @@ import settings
 from model import LogModel, Base
 
 
+def should_write_line(dt, url):
+    if not url.startswith("/court"):
+        return False
+    if settings.BEGIN_DATE:
+        if datetime.strptime(dt, settings.DATETIME_FORMAT) < datetime.strptime(settings.BEGIN_DATE, settings.DATETIME_FORMAT):
+            return False
+    if settings.END_DATE:
+        if datetime.strptime(dt, settings.DATETIME_FORMAT) > datetime.strptime(settings.END_DATE, settings.DATETIME_FORMAT):
+            return False
+    return True
+
+
 def process_log(log_file):
     requests = get_requests(log_file)
 
@@ -29,13 +41,26 @@ def process_log(log_file):
 
         if not request:
             continue
-        req_ip, balancer_ip, req_date, req_type, url, code, size, _,  time = request[0]
 
-        if not url.startswith("/court"):
+        request = request.groupdict()
+
+        remote_addr = request['remote_addr']
+        time_local = request['time_local']
+        url = request['request']
+        status = request['status']
+        body_bytes_sent = request['body_bytes_sent']
+        upstream_response_time = request['upstream_response_time']
+
+        req_type, url, http_protocol = url.split()
+
+        if not should_write_line(time_local, url):
             continue
 
-        log_entry = LogModel(req_ip, req_type, datetime.strptime(req_date, settings.DATETIME_FORMAT), url, code, size, time)
+        log_entry = LogModel(remote_addr, req_type, datetime.strptime(time_local, settings.DATETIME_FORMAT), url,
+                             status, body_bytes_sent,
+                             upstream_response_time)
         session.add(log_entry)
+
     session.commit()
     session.close()
 
@@ -44,15 +69,9 @@ def get_requests(f):
     log_lines = f.readlines()
     lines = []
 
-    pat = (r''
-           '([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})\s([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})\s'
-           '\[(.+)\]\s'  # datetime
-           '"(GET|POST)\s(.+)\s\w+/.+"\s'  # requested type and file
-           '(\d+)\s'  # status
-           '(\d+)\s'  # bandwidth
-           '"(.+)"\s'  # referrer and user-agent
-           '(.+)'  # time process
-           )
+    pat = ''.join(
+        '(?P<' + g + '>.*?)' if g else re.escape(c)
+        for g, c in re.findall(r'\$(\w+)|(.)', settings.LOG_FORMAT))
 
     for line in log_lines:
         lines.append(find(pat, line))
@@ -61,7 +80,7 @@ def get_requests(f):
 
 
 def find(pat, text):
-    match = re.findall(pat, text)
+    match = re.match(pat, text)
     if match:
         return match
     return False
