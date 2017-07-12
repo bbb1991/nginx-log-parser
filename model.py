@@ -1,4 +1,4 @@
-from sqlalchemy import String, Column, DateTime, Integer
+from sqlalchemy import String, Column, DateTime, Integer, Float
 from sqlalchemy.ext.declarative import declarative_base
 
 import settings
@@ -15,10 +15,12 @@ class LogModel(Base):
     request_url = Column(String)
     response_code = Column(Integer)
     response_size = Column(Integer)
+    response_time = Column(Float)
 
-    def __init__(self, ip, date, url, code, size):
+    def __init__(self, ip, date, url, code, size, time):
         self.request_ip = ip
         self.request_date = date
         self.request_url = url
         self.response_code = code
         self.response_size = size
+        self.response_time = time

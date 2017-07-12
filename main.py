@@ -29,13 +29,13 @@ def process_log(log_file):
 
         if not request:
             continue
-
-        ip, date, url, code, size = request[0]
+        print(request[0])
+        req_ip, balancer_ip, req_date, req_type, url, code, size, _,  time = request[0]
 
         if not url.startswith("/court"):
             continue
 
-        log_entry = LogModel(ip, datetime.strptime(date, settings.DATETIME_FORMAT), url, code, size)
+        log_entry = LogModel(req_ip, datetime.strptime(req_date, settings.DATETIME_FORMAT), url, code, size, time)
         session.add(log_entry)
     session.commit()
     session.close()
@@ -46,11 +46,13 @@ def get_requests(f):
     lines = []
 
     pat = (r''
-           '(\d+.\d+.\d+.\d+)\s-\s-\s'  # IP address
+           '([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})\s([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})\s'
            '\[(.+)\]\s'  # datetime
-           '"GET\s(.+)\s\w+/.+"\s'  # requested file
+           '"(GET|POST)\s(.+)\s\w+/.+"\s'  # requested type and file
            '(\d+)\s'  # status
            '(\d+)\s'  # bandwidth
+           '"(.+)"\s'  # referrer and user-agent
+           '(.+)'  # time process
            )
 
     for line in log_lines:
