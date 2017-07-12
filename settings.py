@@ -25,6 +25,7 @@ BEGIN_DATE = "12/Jul/2017:09:00:00 +0600"
 # если не нужно фильтровать, необходимо значение присвоить None
 END_DATE = None
 
+# Предопределенные форматы
 TEST_SERVER_LOG_FORMAT = '$remote_addr - $remote_user [$time_local] "$request" ' \
                          '$status $body_bytes_sent "$http_referer" ' \
                          '"$http_user_agent" "$http_x_forwarded_for"'
@@ -34,4 +35,4 @@ PROD_SERVER_LOG_FORMAT = '$remote_addr - $remote_user [$time_local] "$request" $
                          '"$http_user_agent" "$http_x_forwarded_for" "upstream_response_time" "$upstream_response_time"'
 
 # В каком формате nginx пишет логи
-LOG_FORMAT = PROD_SERVER_LOG_FORMAT
+LOG_FORMAT = TEST_SERVER_LOG_FORMAT
