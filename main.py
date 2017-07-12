@@ -29,13 +29,12 @@ def process_log(log_file):
 
         if not request:
             continue
-        print(request[0])
         req_ip, balancer_ip, req_date, req_type, url, code, size, _,  time = request[0]
 
         if not url.startswith("/court"):
             continue
 
-        log_entry = LogModel(req_ip, datetime.strptime(req_date, settings.DATETIME_FORMAT), url, code, size, time)
+        log_entry = LogModel(req_ip, req_type, datetime.strptime(req_date, settings.DATETIME_FORMAT), url, code, size, time)
         session.add(log_entry)
     session.commit()
     session.close()

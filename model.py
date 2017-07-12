@@ -11,14 +11,16 @@ class LogModel(Base):
 
     id = Column(Integer, primary_key=True)
     request_ip = Column(String)
+    request_type  = Column(String)
     request_date = Column(DateTime)
     request_url = Column(String)
     response_code = Column(Integer)
     response_size = Column(Integer)
     response_time = Column(Float)
 
-    def __init__(self, ip, date, url, code, size, time):
+    def __init__(self, ip, r_q, date, url, code, size, time):
         self.request_ip = ip
+        self.request_type = r_q
         self.request_date = date
         self.request_url = url
         self.response_code = code
