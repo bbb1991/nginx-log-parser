@@ -1,3 +1,5 @@
+import pprint
+
 __author__ = "Bagdat Bimaganbetov"
 __email__ = "bagdat.bimaganbetov@gmail.com"
 __license__ = "MIT"
@@ -50,7 +52,8 @@ def process_log(log_file):
     # Создаем таблицу, если нет в БД
     Base.metadata.create_all(engine)
 
-    for request in requests: # Пробегаемся по спарсенным строкам лога
+    for x in range(len(requests)):
+        request = requests[x]
 
         if not request: # если метод find не смог спарсить строку, пропускаем
             continue
@@ -66,7 +69,13 @@ def process_log(log_file):
         upstream_response_time = request.get('upstream_response_time')
 
         # URL разбиваем на части
-        req_type, url, http_protocol = url.split()
+        try:
+            req_type, url, http_protocol = url.split()
+        except ValueError:
+            try:
+                req_type, url = url.split()
+            except ValueError:
+                continue
 
         # Проводим необходимые проверки, если хоть одна не прошла, пропускаем строку
         if not should_write_line(time_local, url):
@@ -77,6 +86,9 @@ def process_log(log_file):
                              status, body_bytes_sent,
                              upstream_response_time)
         session.add(log_entry)
+        if x % 1000 == 0:
+            session.flush()
+            session.commit()
 
     # После того, как закончили все наши темные делишки, комиттимся
     session.commit()
