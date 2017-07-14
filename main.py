@@ -84,7 +84,7 @@ def process_log(log_file):
         # Создаем и записываем в БД
         log_entry = LogModel(remote_addr, req_type, datetime.strptime(time_local, settings.DATETIME_FORMAT), url,
                              status, body_bytes_sent,
-                             upstream_response_time)
+                             None if upstream_response_time == '-' else float(upstream_response_time))
         session.add(log_entry)
         if x % 1000 == 0:
             session.flush()
